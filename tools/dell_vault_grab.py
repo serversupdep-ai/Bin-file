@@ -317,16 +317,24 @@ def report_module(d, label, save_path):
                     line += f"\n            params[0:0x60] = {d[po:po+0x60].hex()}"
                     # decode the known 56-byte layout: loopParams[4] u32 + 8B pad
                     # + encodeParams[8] u32 (ep[0]==ep[7], ep[3]==ep[4] template)
-                    lp = struct.unpack_from("<4I", d, po)
-                    pad = d[po+16:po+24]
-                    ep = struct.unpack_from("<8I", d, po+24)
-                    if (all(4 <= v <= 31 for v in lp) and pad == b"\0"*8):
+                    a16 = struct.unpack_from("<4I", d, po)
+                    b16 = struct.unpack_from("<4I", d, po+32)
+                    pad = d[po+48:po+56]
+                    small = lambda t: all(4 <= v <= 31 for v in t)
+                    lp = ep = None
+                    if small(a16) and pad == b"\0"*8:          # lp-first
+                        lp, ep = a16, struct.unpack_from("<8I", d, po+16)
                         line += (f"\n            DECODED loopParams={list(lp)} "
                                  f"encodeParams={[hex(x) for x in ep]}")
-                        if ep[0] == ep[7] and ep[3] == ep[4]:
+                    elif small(b16) and pad == b"\0"*8:        # ep-first (1.13.0 layout)
+                        lp, ep = b16, struct.unpack_from("<8I", d, po)
+                        line += (f"\n            DECODED encodeParams={[hex(x) for x in ep]} "
+                                 f"loopParams={list(lp)}")
+                        if ep and ep[0] == ep[7] and ep[3] == ep[4]:
                             line += "  (template-consistent -> keygen-ready)"
-                        line += (f"\n            code-2 extension entries = "
-                                 f"{[hex(x ^ 0x6D2F93A5) for x in (ep[5], ep[2], ep[1], ep[3])]}")
+                        if ep:
+                            line += (f"\n            code-2 extension entries = "
+                                     f"{[hex(x ^ 0x6D2F93A5) for x in (ep[5], ep[2], ep[1], ep[3])]}")
             else:
                 line += "  params = NULL  -> derivation NOT local (EC / other path)"
             if p_alpha:
