@@ -222,6 +222,31 @@ machine the practical unlock therefore remains the deterministic dump patch
 (`tools/dell_8fc8_patch.py`) or an EC-firmware dump + the same RE. CF1B (2025+) is
 expected to follow the same architecture (successor of 8FC8).
 
+
+### 6c. Complete suffix catalog (firmware + forum sweep, Sep 2026)
+
+Every lockout suffix seen in the wild, cross-checked against the firmware's own lists
+(vault .data @0x92e0: `E7A8 BF97 6FF1 1F66 1D3B 2A7B 0001 | FFFF`; legacy string table
+@0x9938; new-gen 24-byte table @0x9760: `8FC8(params NULL) E7A8(params @0x91e8)`):
+
+| suffix | era | engine (as proven in firmware) | keygen |
+|---|---|---|---|
+| 595B / D35B / 2A7B / 1D3B / 1F66 / 6FF1 / 1F5A / BF97 / A95B (+ HDD numbers) | ≤2020 | MD5 legacy == public algo (byte-exact vs our port) | ✅ `tools/dell_master_keygen.py` (47/47) |
+| **E7A8** (2018–2024 BIOS) | — | new-gen cipher, params in BIOS image | ✅ `tools/dell_v2_keygen.py` — **8/8 real-world vectors** (65FDQN2, D9B7JW2, 5LS8423, F2V9SQ2, J4F3CV2, G7LMQ73, 6HDT5S2 + legacy-equality) |
+| E7A8 (late-2024+ BIOS) | 2024+ | same cipher, **ROTATED params** (proven: FFC06D3 Oct-2024 & 89J3S73 Aug-2025 fail with 1.13.0 params while 2023 machines match) | run `dell_newbios_probe.py` on that machine's BIOS image → keygen follows |
+| 0001 | 2024+ | emulation shows SMM falls back to the legacy canonical (BF97) key; community: master-password option disabled in this state → codes usually rejected | dump-patch (`dell_8fc8_patch.py`) |
+| 8FC8 | 2020–2025 | EC mailbox (DellEcIoSmm port I/O), derivation NOT in BIOS | ❌ local — needs EC firmware; use patcher |
+| CF1B | 2025+ | 8FC8 successor (community/chromebreaker) | needs newer BIOS image (probe) |
+| 9ABE | 2025–2026 | newest gen; absent from BIOS 1.13.0 — lives in ≥1.17.0-era images | needs newer BIOS image (probe) — upload `BIOS_IMG.rcv` |
+| 3FE2 | 2021+ | "BIOS Service Tag Lockout Code" state; treated by repair community exactly like 8FC8 cases | dump-patch |
+| "8FCE" | — | **does not exist** — zero forum reports ever; typo/OCR of 8FC8 | (= 8FC8) |
+
+Notes proven this session (emulator, fn B @0x58b4): suffix word `0x0001` and `0xBF97`
+produce identical output (legacy canonicalisation of unknown/new words); the second
+code ("Unlock Code 2") quoted alongside E7A8 keys in forums is NOT produced by either
+dispatcher (0x53f0/0x553c) with any input variant tested — it is the first code that is
+consistently reported working.
+
 ### 6b. Tooling added in this pass
 
 * `tools/emu_vault.py` — Unicorn harness: loads DellSecurityVaultSmm with base

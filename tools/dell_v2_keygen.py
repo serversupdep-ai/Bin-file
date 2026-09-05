@@ -20,6 +20,25 @@ Validation (real-world, badcaps/iFixit reported WORKING codes, 2022..2025):
   65FDQN2-E7A8 -> zxdIkZ1XBrINbkDr      F2V9SQ2-E7A8 -> PIFQ2Nns9xMIIQsG
   D9B7JW2-E7A8 -> es6yZz5EaFBxE17Q      J4F3CV2-E7A8 -> d2bkF2QekQ2rbk9Q
   5LS8423-E7A8 -> RnGrGsQNZB1rIJ9r      G7LMQ73-E7A8 -> 1GIkGGGmZNc2RNMN
+  6HDT5S2-E7A8 -> rhGyIG6Nk7MFE9Gk
+
+IMPORTANT — suffix generations (verified against forums + this firmware, BIOS 1.13.0):
+  legacy 2A7B/1D3B/1F66/6FF1/1F5A/BF97/595B/D35B (+HDD) -> public algo, dell_master_keygen.py
+  E7A8 (2018-2024 BIOS)  -> THIS tool (7/7 real-world vectors). Dell ROTATED the E7A8
+         params in late-2024 BIOS builds: machines with those BIOSes (e.g. FFC06D3,
+         89J3S73 Latitude 3190, Oct-2024+) need the params from THEIR BIOS image
+         (run tools/dell_newbios_probe.py on it, then this tool with --pe).
+  0001 (2024+)           -> emulation shows the SMM code falls back to the legacy
+         canonical (BF97-table) key; community reports the master-password option is
+         DISABLED in this state, so codes are usually rejected -> dump-patch instead.
+  8FC8 (2020-2025)       -> derivation done inside the Embedded Controller (mailbox
+         via DellEcIoSmm); no local keygen possible from the BIOS image alone.
+  CF1B (2025+)           -> 8FC8's successor per community; same expected architecture.
+  9ABE (2025-2026)       -> newest generation; not present in BIOS 1.13.0 - requires
+         the newer BIOS image (upload BIOS_IMG.rcv from the machine's driver page).
+  3FE2 (2021+)           -> "BIOS Service Tag Lockout" state, treated like 8FC8
+         cases (dump patch); no key-based unlock.
+  "8FCE"                 -> no such suffix exists in any forum report; OCR/typo of 8FC8.
 
 8FC8 (Precision 3581 & other 2024+ models): the BIOS deliberately does NOT
 contain the derivation — fn B returns EFI_INVALID_PARAMETER for suffix 8FC8 and
@@ -199,8 +218,10 @@ def locate_fn_b(pe_bytes):
 # key generation
 # --------------------------------------------------------------------------- #
 SUFFIX_WORDS = {
-    'E7A8': 0xE7A8, '8FC8': 0x8FC8,
+    'E7A8': 0xE7A8, '8FC8': 0x8FC8, '0001': 0x0001, '3FE2': 0x3FE2, '9ABE': 0x9ABE,
+    'AB9E': 0xAB9E, '8FCE': 0x8FCE, 'CF1B': 0xCF1B,
     '2A7B': 0x2A7B, '1D3B': 0x1D3B, '1F66': 0x1F66, '6FF1': 0x6FF1, 'BF97': 0xBF97,
+    '1F5A': 0x1F5A, '595B': 0x595B, 'D35B': 0xD35B, 'A95B': 0xA95B,
 }
 
 def generate(emu, fn_b, tag: str, suffix_word: int, out_len=16, in_len=None):
@@ -223,6 +244,7 @@ VECTORS = [
     ("F2V9SQ2", 0xE7A8, "PIFQ2Nns9xMIIQsG"),
     ("J4F3CV2", 0xE7A8, "d2bkF2QekQ2rbk9Q"),
     ("G7LMQ73", 0xE7A8, "1GIkGGGmZNc2RNMN"),
+    ("6HDT5S2", 0xE7A8, "rhGyIG6Nk7MFE9Gk"),
     ("DELLSUX", 0xBF97, "rrNM2LrbD8nGsd2P"),  # legacy canonical == public v1
 ]
 
@@ -275,11 +297,23 @@ def main():
     if word is None:
         sys.exit(f"unknown suffix {sfx!r}; use E7A8 or a 4-hex-digit family word")
 
-    if word == 0x8FC8:
+    if word == 0x8FC8 or word == 0x8FCE:
         print("8FC8: this BIOS generation performs the derivation inside the Embedded\n"
               "Controller (DellEcIoSmm mailbox), not in SMM — no local keygen exists.\n"
+              "('8FCE' is not a real suffix — it is a typo/OCR of 8FC8.)\n"
               "Unlock deterministically from a dump instead: tools/dell_8fc8_patch.py")
         sys.exit(2)
+    if word in (0x9ABE, 0xAB9E, 0xCF1B):
+        print(f"{sfx}: newest generation — NOT present in BIOS 1.13.0 (this firmware only\n"
+              "has 8FC8/E7A8). Get BIOS_IMG.rcv from the machine's Dell driver page and run\n"
+              "tools/dell_newbios_probe.py on it; if the new table entry has params != NULL,\n"
+              "this same emulator approach yields a keygen immediately.")
+        sys.exit(2)
+    if word in (0x0001, 0x3FE2):
+        print(f"{sfx}: per forum research this state indicates the master-password option\n"
+              "is disabled (0001) or a Service-Tag lockout (3FE2); emulation shows 0001 falls\n"
+              "back to the legacy canonical key, which machines in this state usually reject.\n"
+              "Recommended: dump patch (tools/dell_8fc8_patch.py). Showing the fallback anyway.")
 
     rv, out = generate(emu, fn_b, tag, word)
     if rv & 0xFFFFFFFF00000000 and (rv >> 32) == 0x80000000:
