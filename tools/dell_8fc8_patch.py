@@ -116,9 +116,9 @@ def patch(data):
 
 def main():
     args = sys.argv[1:]
-    if not args:
+    if not args or args[0] in ("-h", "--help"):
         print(__doc__)
-        return 1
+        return 0
     mode = "--scan"
     files = []
     for a in args:
