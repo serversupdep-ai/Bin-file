@@ -1,0 +1,23 @@
+[+] self-test OK: E7250 vector decodes to 'password'
+==============================================================================
+File: /tmp/r16.bin  (16777984 bytes / 16384 KB)
+DVAR signature occurrences: 0; validated DVAR stores: 0  (occurrences are code references in drivers, not data stores)
+SIVB vault record @ 0x0022B000  hdr=0x30 payload=0x1d40 sha256=9abb1eb9060f9b6c4015886d6525040c5be8e67cb942956dcd8c3cd935be221e
+    -> extracted to r16_SIVB_0x0022B000.bin
+Dell setup-token records (0xAA557887): 205 (first @ 0x0022F000, last @ 0x003ED000)
+
+No DVAR store present -> the vulnerable XOR scheme is not in use here.
+VERDICT: this platform hides the BIOS/master password in the SIVB
+vault: the password is stored only as a SHA-256 hash inside an
+AES-encrypted vault (Dell's fixed scheme, see DSA-2026-197).
+The plaintext password is NOT recoverable from the dump alone;
+the encrypted vault record has been extracted above for offline
+analysis or for clearing (password removal) workflows.
+
+==============================================================================
+File: /tmp/xm32.bin  (33555200 bytes / 32768 KB)
+DVAR signature occurrences: 6; validated DVAR stores: 0  (occurrences are code references in drivers, not data stores)
+SIVB vault: none found (no live password vault in this image)
+
+No DVAR store present -> the vulnerable XOR scheme is not in use here.
+
