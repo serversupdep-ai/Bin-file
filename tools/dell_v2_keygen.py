@@ -274,13 +274,17 @@ def main():
     elif args.dump:
         pe = pe_from_dump(args.dump)
     else:
-        # best-effort session default
+        # bundled module (Precision 3581 BIOS 1.13.0) -> session scratch copy
+        bundled = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "firmware", "DellSecurityVaultSmm_3581_BIOS1.13.0.pe")
         cand = ("/tmp/biosx/X/regions/region-bios/volume-0/file-1303221f-4197-b792-2466-f49e45233681"
                 "/section0/section1/volume-ee4e5898-3914-4259-9d6e-dc7bd79403cf/"
                 "file-c7caf1c7-2d97-45cb-99d9-d89aaf8acc11/section1.pe")
-        if os.path.exists(cand):
-            pe = open(cand, 'rb').read()
-        else:
+        for c in (bundled, cand):
+            if os.path.exists(c):
+                pe = open(c, 'rb').read()
+                break
+        if pe is None:
             sys.exit("no firmware source: pass --pe or --dump (see --help)")
     emu, fn_b = locate_fn_b(pe)
 
