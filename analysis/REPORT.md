@@ -256,6 +256,35 @@ It reproduces all 7 forum-quoted code-2 values, including the publicly witnessed
 both codes) and wired into `dell_v2_keygen.py`, which now prints both codes and
 falls back to the pure engine when unicorn is not installed.
 
+### 6d. 9ABE acquisition status (as of 2026-09-05)
+
+Confirmed 9ABE machines (public): Latitude 5440, BIOS 1.30.3, tag BCBXD14
+(pwgen-for-bios #324); Latitude 3450, BIOS 1.22.1, tag 6VZW194 (#330);
+plus 2025-26 forum tags 6DRBM34 / 2V7P224 / 9Z02LX3. CF1B sightings include
+Latitude 5410 (#322) — 8FC8's successor generation.
+
+Firmware-byte reachability from the research sandbox: github.com (clones +
+API blobs), codeload.github.com, pypi.org + files.pythonhosted.org ONLY.
+dl.dell.com, archive.org, LVFS/cdn.fwupd.org, huggingface, zenodo, GDrive,
+ghcr/npm registries, objects.githubusercontent.com (release assets), and
+raw.githubusercontent.com are all blocked. Exhaustive GitHub code/repo/issue
+searches found NO committed 2024+ Dell firmware or vault module (only
+luc4m4rio/Project-Bytes' BIOS 1.19.1 extraction *reports*, 8th-gen platform).
+
+Active asks: bacher09/pwgen-for-bios#331 + #324/#330 (9ABE machine owners),
+luc4m4rio/Project-Bytes#2 (vault PE from 1.19.1 or newer).
+
+Ready-to-run intake pipeline (committed here):
+* tools/dell_vault_grab.py — stdlib-only; accepts .exe/.rcv/dump; walks
+  FFS -> GUIDed-LZMA -> nested FVs; decodes suffix tables; flags 9ABE/CF1B
+  entries + dumps their params. Validated: 1.13.0 module (exact table
+  {8FC8 NULL, E7A8 params 0x91e8}), full 25 MB BIOS region (multi-layer
+  LZMA), synthetic 9ABE image.
+* tools/dell_newbios_probe.py — uefi_firmware-based structured parse.
+* If 9ABE params != NULL: extend SUFFIX_WORDS + feed the new params to the
+  existing Unicorn harness (the E7A8 pipeline unchanged) -> keygen.
+  If NULL: EC-bound (8FC8/CF1B route) -> tools/dell_8fc8_patch.py.
+
 ### 6b. Tooling added in this pass
 
 * `tools/emu_vault.py` — Unicorn harness: loads DellSecurityVaultSmm with base
