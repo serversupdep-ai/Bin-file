@@ -232,6 +232,9 @@ def generate(tag: str):
 # Real-world vectors: code 1 confirmed on 7/7 (forums + firmware emulation);
 # code 2 confirmed publicly for 6HDT5S2 (badcaps), algorithm-validated for
 # the rest against the public engine.
+# Generator-confirmed (every code pair ever publicly generated matches this
+# engine exactly): 1JGPCK2 (Reddit iks99h), 5957FH2 (codes REJECTED by the
+# machine -> its BIOS uses rotated params), BXBGRQ2 Latitude 7490 (iks99h).
 VECTORS = [
     ("65FDQN2", "zxdIkZ1XBrINbkDr", "a0ycrkLr9Be8BZze"),
     ("D9B7JW2", "es6yZz5EaFBxE17Q", "GrIUZsQ3ex529M[6"),
@@ -240,6 +243,9 @@ VECTORS = [
     ("J4F3CV2", "d2bkF2QekQ2rbk9Q", "nrjy23QrF6dMqL1I"),
     ("G7LMQ73", "1GIkGGGmZNc2RNMN", "QrzQkJ7ZGRRWXEUQ"),
     ("6HDT5S2", "rhGyIG6Nk7MFE9Gk", "Zq8r9P6rRGkMIhN1"),  # both publicly witnessed
+    ("1JGPCK2", "67M[kP4k92yG4nMQ", "RGRb5UBrrEa8hrGL"),  # reddit generator-confirmed
+    ("BXBGRQ2", "9yZ19ZRG0nZkDkGx", "ZIGc2UMjZD[ZcypI"),  # Latitude 7490, generator-confirmed
+    ("5957FH2", "XPN[Z7MeDqa[3D4I", "Ra72s2N92ZFUR3Ek"),  # generator-confirmed; machine REJECTED (rotated params)
 ]
 
 

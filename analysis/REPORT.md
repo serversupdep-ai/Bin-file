@@ -274,6 +274,16 @@ luc4m4rio/Project-Bytes' BIOS 1.19.1 extraction *reports*, 8th-gen platform).
 Active asks: bacher09/pwgen-for-bios#331 + #324/#330 (9ABE machine owners),
 luc4m4rio/Project-Bytes#2 (vault PE from 1.19.1 or newer).
 
+Pair-hunt pass (2026-09-05, see analysis/9ABE_PAIR_HUNT.md): harvested every
+public (tag -> code) pair for new generations via the arctic-shift reddit
+archive. Result: 0 public 9ABE codes anywhere (9 machines catalogued; only
+chip-patch/Dell-transfer solutions); our engine reproduces 100% of all
+publicly generated E7A8 pairs ever posted (10 tags, 20/20 codes, self-test
+extended); public-params failures on E7270/E7470/7510/3190-2024/5957FH2
+prove per-BIOS-branch params — one private tool (reddit Captain_Zomaru)
+holds extra E7A8 branch params but explicitly cannot do 8FC8/CF1B/9ABE.
+New suffix words observed: 8FCA, 8FDC8 (8FC8-family), A6E0, 1B58.
+
 Ready-to-run intake pipeline (committed here):
 * tools/dell_vault_grab.py — stdlib-only; accepts .exe/.rcv/dump; walks
   FFS -> GUIDed-LZMA -> nested FVs; decodes suffix tables; flags 9ABE/CF1B
