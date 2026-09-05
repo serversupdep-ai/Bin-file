@@ -247,6 +247,15 @@ code ("Unlock Code 2") quoted alongside E7A8 keys in forums is NOT produced by e
 dispatcher (0x53f0/0x553c) with any input variant tested — it is the first code that is
 consistently reported working.
 
+**UPDATE — Code 2 SOLVED** (cross-source validation): the public engine port
+(chromebreakerdev/Dell-Unlocker `WORKINGKEYGEN.py`) contains a `TagE7A8EncoderSecond`:
+same core with a 4-entry-extended constant table (entries = original `encodeParams`
+XOR `0x6D2F93A5`) and inner-loop depth 16 instead of 8 (`loopParams [17,13,12,16]`).
+It reproduces all 7 forum-quoted code-2 values, including the publicly witnessed
+6HDT5S2 -> `Zq8r9P6rRGkMIhN1`. Ported to `tools/dell_e7a8_pure.py` (14/14 vectors,
+both codes) and wired into `dell_v2_keygen.py`, which now prints both codes and
+falls back to the pure engine when unicorn is not installed.
+
 ### 6b. Tooling added in this pass
 
 * `tools/emu_vault.py` — Unicorn harness: loads DellSecurityVaultSmm with base

@@ -20,7 +20,12 @@ Validation (real-world, badcaps/iFixit reported WORKING codes, 2022..2025):
   65FDQN2-E7A8 -> zxdIkZ1XBrINbkDr      F2V9SQ2-E7A8 -> PIFQ2Nns9xMIIQsG
   D9B7JW2-E7A8 -> es6yZz5EaFBxE17Q      J4F3CV2-E7A8 -> d2bkF2QekQ2rbk9Q
   5LS8423-E7A8 -> RnGrGsQNZB1rIJ9r      G7LMQ73-E7A8 -> 1GIkGGGmZNc2RNMN
-  6HDT5S2-E7A8 -> rhGyIG6Nk7MFE9Gk
+  6HDT5S2-E7A8 -> rhGyIG6Nk7MFE9Gk (code 2: Zq8r9P6rRGkMIhN1)
+
+Also prints "Unlock Code 2" for E7A8 via tools/dell_e7a8_pure.py — a pure-python
+port of the validated "Second" encoder (extended const table + inner depth 16),
+14/14 vectors. That engine doubles as a zero-dependency fallback: without
+unicorn installed, this script still generates both E7A8 codes.
 
 IMPORTANT — suffix generations (verified against forums + this firmware, BIOS 1.13.0):
   legacy 2A7B/1D3B/1F66/6FF1/1F5A/BF97/595B/D35B (+HDD) -> public algo, dell_master_keygen.py
@@ -60,8 +65,12 @@ import argparse, os, re, struct, sys, tempfile, shutil
 # --------------------------------------------------------------------------- #
 # harness (same as tools/emu_vault.py, kept self-contained for portability)
 # --------------------------------------------------------------------------- #
-from unicorn import *
-from unicorn.x86_const import *
+try:
+    from unicorn import *
+    from unicorn.x86_const import *
+    HAVE_UNICORN = True
+except ImportError:            # pure-python fallback still covers E7A8 (both codes)
+    HAVE_UNICORN = False
 
 BASE     = 0x00400000
 STACK    = 0x00700000
@@ -269,6 +278,20 @@ def main():
     args = ap.parse_args()
 
     pe = None
+    if not HAVE_UNICORN:
+        # No emulator: pure-python E7A8 engine (validated 14/14, both codes).
+        sfx = (args.suffix or 'E7A8').strip().upper()
+        if args.tag and sfx == 'E7A8':
+            import dell_e7a8_pure
+            tag = args.tag.strip().upper()
+            c1, c2 = dell_e7a8_pure.generate(tag)
+            print(f"Dell {tag}-E7A8   [unicorn not installed -> pure-python engine]")
+            print(f"  unlock code: {c1}")
+            print(f"  code 2     : {c2}")
+            print("Notes: US QWERTY; hold Ctrl then press Enter twice (Ctrl-Enter-Enter).")
+            sys.exit(0)
+        sys.exit("unicorn is not installed (pip install unicorn); without it only E7A8 "
+                 "is supported via the pure-python engine")
     if args.pe:
         pe = open(args.pe, 'rb').read()
     elif args.dump:
@@ -324,6 +347,13 @@ def main():
         sys.exit(f"firmware rejected the request (status {rv:#x})")
     print(f"Dell {tag}-{sfx}")
     print(f"  unlock code: {out.decode('latin1')}")
+    if word == 0xE7A8:
+        try:
+            import dell_e7a8_pure
+            c1, c2 = dell_e7a8_pure.generate(tag)
+            print(f"  code 2     : {c2}   (pure-python engine; try if code 1 is rejected)")
+        except Exception as e:
+            print(f"  (code 2 unavailable: {e})")
     print("Notes: US QWERTY; hold Ctrl then press Enter twice (Ctrl-Enter-Enter).")
     print("      For legacy families also try the 1F5A/BF97 code (tools/dell_master_keygen.py).")
 
