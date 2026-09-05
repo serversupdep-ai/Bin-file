@@ -295,6 +295,32 @@ Ready-to-run intake pipeline (committed here):
   existing Unicorn harness (the E7A8 pipeline unchanged) -> keygen.
   If NULL: EC-bound (8FC8/CF1B route) -> tools/dell_8fc8_patch.py.
 
+### 6a-bis. Parameter-space "deep play" on the new generation (2026-09-05)
+
+Oracles available for the late-2024 branch (no firmware): FFC06D3 ->
+ZzIL1LJL3260RGdI / 2Wrrzc6Nq2DG0QQZ (badcaps, Oct-2024 BIOS) and 7XSP3D3-0001
+-> Jp1PZrbZE9ZmJIkn / ZZqL3Nk8nE6kM9x3. Tested with tools/dell_param_solver.py:
+
+* family/format shotgun: all 10 legacy families x both E7A8 encoders x 14
+  suffix-strings x 4 block formats (std/serial-mode/lowercase/suffix-first)
+  = 0 matches -> the branch is NOT a format change.
+* structural transforms (whole-block XOR 0x6D2F93A5, byte-swap, reversal,
+  pair-swaps, 9 loopParam variants) = 0 hits.
+* template-delta search: loopParams-only (320 grids) + encodeParams
+  single-knob deltas (+-1/8/0x10/0x100/0x1000 on 4 structural knobs, 9.8k
+  combos + e/f knobs 2.5k) = 0 hits in ~13.3k combos (~13k x 2^-32 hit
+  probability per combo if random -> expected 0 hits; i.e. the rotation is
+  a fresh pseudo-random draw, NOT a template delta like the legacy
+  suffix family).
+* 0x6D2F93A5 provenance: not derived from any obvious string/hash/constant
+  relation tested -> treat as opaque Dell constant.
+
+Consequence: late-2024+ branches (and 9ABE) cannot be reached analytically
+from known params; only the per-branch firmware table (or Dell) holds them.
+tools/dell_vault_grab.py now auto-DECODES a new entry's 56-byte params blob
+into loopParams + encodeParams (+ derives the code-2 extension entries), so
+a single 9ABE-era file converts to a working keygen in one step.
+
 ### 6b. Tooling added in this pass
 
 * `tools/emu_vault.py` — Unicorn harness: loads DellSecurityVaultSmm with base
