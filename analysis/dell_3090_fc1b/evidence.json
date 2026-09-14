@@ -1,0 +1,34 @@
+{
+  "dvar": [],
+  "fvs": [],
+  "hashes": {
+    "md5": "810bbaa636050e8f92379f38d32d9f99",
+    "sha256": "400b4a3fd3a8dfb9f0e4097defc5d66233d49d24079e8094fcd1985b0fbad529"
+  },
+  "identification": {
+    "bios_version": null,
+    "fc1b_occurrences": 0,
+    "fc1b_string_context": [],
+    "model": null,
+    "strings": {
+      "bios": [],
+      "dell": [],
+      "fc1b": []
+    }
+  },
+  "layout": {
+    "descriptor": null,
+    "probable": false,
+    "regions": [
+      {
+        "confidence": "low",
+        "end": 7679,
+        "name": "whole_dump",
+        "offset": 0,
+        "size": 7680
+      }
+    ]
+  },
+  "password_records": [],
+  "variables": []
+}

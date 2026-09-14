@@ -1,0 +1,161 @@
+{
+  "BIOS_VERSION": "UNKNOWN",
+  "CANDIDATE_VARIABLES": [],
+  "CONFIDENCE": "HIGH",
+  "DUMP_SIZE": 7680,
+  "DVAR_OFFSETS": [],
+  "ENCRYPTION_TYPE": "SIVB / encrypted vault",
+  "ENTROPY_BY_REGION": [
+    {
+      "entropy": 7.527209,
+      "offset": 0,
+      "sha256": "43c5e7f3aa88b3bafaff02f542bd548d062ac89c3c79df3645e548b20121f26a",
+      "size": 480
+    },
+    {
+      "entropy": 7.593512,
+      "offset": 480,
+      "sha256": "6033a2fb2ca4ec4e5652f08719a4b4ea3e6596d21155b6ef1a1c1f0074044711",
+      "size": 480
+    },
+    {
+      "entropy": 7.53528,
+      "offset": 960,
+      "sha256": "926a9d7796b58a19853d73135f19bc1eea7c064740217946249ba6367a932d69",
+      "size": 480
+    },
+    {
+      "entropy": 7.55829,
+      "offset": 1440,
+      "sha256": "6a5fb7607012adafd8242e4c9ac4713fc148e2df027dccf265ef15c0ab4fd09e",
+      "size": 480
+    },
+    {
+      "entropy": 7.556825,
+      "offset": 1920,
+      "sha256": "85256fedade47dc506d023fbef785a809136b2653fe88b7e8d7c64ab576760e8",
+      "size": 480
+    },
+    {
+      "entropy": 7.593768,
+      "offset": 2400,
+      "sha256": "a3f3cc7d6755dfa4a8dc1e4dbcc0bf1237ca5fc6aa5846207371ebd2b7445a6a",
+      "size": 480
+    },
+    {
+      "entropy": 7.543768,
+      "offset": 2880,
+      "sha256": "6afbe7ffbe0b04e3835419b9fa46c5370621d765764428858f02512a04fbdfdf",
+      "size": 480
+    },
+    {
+      "entropy": 7.550166,
+      "offset": 3360,
+      "sha256": "1078132e5398e7907f5d0486c48100ecb591afaf6d2d95ae3dae013610b94e44",
+      "size": 480
+    },
+    {
+      "entropy": 7.540086,
+      "offset": 3840,
+      "sha256": "7b9ec92849a29a630c3df3a4923029647639e6729b4740416c2b6693cceb49be",
+      "size": 480
+    },
+    {
+      "entropy": 7.560489,
+      "offset": 4320,
+      "sha256": "a0b27e9e7f7bef9bda93ea7c74e1b178ca92df97c4eb6074900e36f16fcf8420",
+      "size": 480
+    },
+    {
+      "entropy": 7.595066,
+      "offset": 4800,
+      "sha256": "e2d0567c4b0b9453309c15ede67aa08ff72f368ea05eb773e299aa11e837a852",
+      "size": 480
+    },
+    {
+      "entropy": 7.540966,
+      "offset": 5280,
+      "sha256": "c900dbb906fa4e5a5db88024a66eb2b952e96eb9ee973f63dd21b4049f58c856",
+      "size": 480
+    },
+    {
+      "entropy": 7.576583,
+      "offset": 5760,
+      "sha256": "b5b4824b7b9e2509ea1ff028de7c66b1e503825a0765f2d94c3485753c27b2ed",
+      "size": 480
+    },
+    {
+      "entropy": 7.531771,
+      "offset": 6240,
+      "sha256": "252974465d4d503256409306047a0ec7a779d76a2b221e34f3e2f53e16f5ff3d",
+      "size": 480
+    },
+    {
+      "entropy": 7.559265,
+      "offset": 6720,
+      "sha256": "739960a5aceab38e01f16bd8fc2640fd17ba7d971a06e9f4f6e9a94b8da86613",
+      "size": 480
+    },
+    {
+      "entropy": 6.811062,
+      "offset": 7200,
+      "sha256": "6f154eebac35b0db86b8e8b158b02f44745909bcebba6fb8bc7b7ec5561ecd1a",
+      "size": 480
+    }
+  ],
+  "ERRORS": [],
+  "FC1B_ANALYSIS": {
+    "classification": "NOT_OBSERVED",
+    "correlated_with_dvar": false,
+    "evidence": [],
+    "occurrences": 0
+  },
+  "KEY_ANALYSIS": [],
+  "MD5": "810bbaa636050e8f92379f38d32d9f99",
+  "MODEL": "NOT_CONFIRMED",
+  "PASSWORD_RECORD": [],
+  "READ_ONLY": true,
+  "RECOVERY_RESULT": "UNSUPPORTED_FIRMWARE",
+  "REFERENCES": [
+    {
+      "commit": null,
+      "file": "N/A",
+      "function": "N/A",
+      "relevance": "DVAR XOR construction; validate against bytes, do not assume",
+      "source": "CVE-2026-40639 / DSA-2026-197",
+      "version": "public advisory, consulted 2026-09"
+    },
+    {
+      "commit": null,
+      "file": "repository implementation",
+      "function": "Dell password record handling",
+      "relevance": "independent public cross-check; not a runtime dependency",
+      "source": "https://github.com/R3n5k1/dellpwn",
+      "version": "repository reference; commit is intentionally not fetched at runtime"
+    },
+    {
+      "commit": null,
+      "file": "UEFI variable and FV definitions",
+      "function": "variable store / FV header parsing",
+      "relevance": "structural parsing",
+      "source": "UEFI PI specification",
+      "version": "2.10"
+    }
+  ],
+  "SHA256": "400b4a3fd3a8dfb9f0e4097defc5d66233d49d24079e8094fcd1985b0fbad529",
+  "SPI_REGIONS": {
+    "descriptor": null,
+    "probable": false,
+    "regions": [
+      {
+        "confidence": "low",
+        "end": 7679,
+        "name": "whole_dump",
+        "offset": 0,
+        "size": 7680
+      }
+    ]
+  },
+  "UEFI_FV": [],
+  "VERDICT": "NO_MATCH"
+}
