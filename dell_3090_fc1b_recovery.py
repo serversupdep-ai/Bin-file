@@ -163,11 +163,22 @@ def analyze(path: str|Path, outdir: str|Path, verbose=False, suffix='FC1B') -> d
     elif sivb: verdict='NO_MATCH'; recovery='UNSUPPORTED_FIRMWARE'
     else: verdict='UNKNOWN'; recovery='PASSWORD_RECORD_NOT_FOUND'
     report={'MODEL':ident['model'] or 'NOT_CONFIRMED','BIOS_VERSION':ident['bios_version'] or 'UNKNOWN','DUMP_SIZE':len(data),'SHA256':sha(data),'MD5':md5(data),'SPI_REGIONS':layout,'ENTROPY_BY_REGION':region_entropy(data),'UEFI_FV':fvs(data),'DVAR_OFFSETS':stores,'CANDIDATE_VARIABLES':[asdict(v) for v in vars],'PASSWORD_RECORD':[asdict(x) for x in found],'ENCRYPTION_TYPE':'DVAR weak XOR' if found or stores else ('SIVB / encrypted vault' if sivb else 'UNKNOWN'),'KEY_ANALYSIS':[asdict(x) for x in found],'FC1B_ANALYSIS':inspect_suffix(data,suffix,[asdict(x) for x in found]),'RECOVERY_RESULT':recovery,'VERDICT':verdict,'CONFIDENCE':'CONFIRMED' if found else ('HIGH' if sivb or stores else 'LOW'),'ERRORS':[],'REFERENCES':[{'source':'CVE-2026-40639 / DSA-2026-197','version':'public advisory, consulted 2026-09','commit':None,'file':'N/A','function':'N/A','relevance':'DVAR XOR construction; validate against bytes, do not assume'}, {'source':'https://github.com/R3n5k1/dellpwn','version':'repository reference; commit is intentionally not fetched at runtime','commit':None,'file':'repository implementation','function':'Dell password record handling','relevance':'independent public cross-check; not a runtime dependency'}, {'source':'UEFI PI specification','version':'2.10','commit':None,'file':'UEFI variable and FV definitions','function':'variable store / FV header parsing','relevance':'structural parsing'}],'READ_ONLY':True}
+    report['DUMP_TYPE']='complete_spi_programmer_dump' if len(data) in (0x1000200,0x2000200,0x10000200,0x20000200) else ('complete_spi_candidate' if len(data) in (0x1000000,0x2000000,0x10000000,0x20000000) else 'partial_or_unknown')
+    # Preserve byte-for-byte evidence in dedicated directories; never write to input.
+    (od/'dvar').mkdir(exist_ok=True); (od/'hexdumps').mkdir(exist_ok=True)
+    for i,s in enumerate(stores):
+        blob=data[s['offset']:min(len(data),s['offset']+s['size'])]
+        (od/'dvar'/f"store_{i:02d}_0x{s['offset']:08X}.bin").write_bytes(blob)
+    for i,v in enumerate(found):
+        (od/'hexdumps'/f"password_record_{i:02d}_0x{v.offset:08X}.hex").write_text(v.record_hex+'\n')
+    for i,s in enumerate(sivb):
+        o=s['offset']; (od/'hexdumps'/f"sivb_{i:02d}_0x{o:08X}.hex").write_text(data[o:o+s['size']].hex()+'\n')
+    report['DUMP_TYPE']='complete_spi_programmer_dump' if len(data) in (0x1000200,0x2000200,0x10000200,0x20000200) else ('complete_spi_candidate' if len(data) in (0x1000000,0x2000000,0x10000000,0x20000000) else 'partial_or_unknown')
     (od/'report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
     (od/'evidence.json').write_text(json.dumps({'hashes':{'sha256':sha(data),'md5':md5(data)},'identification':ident,'layout':layout,'fvs':report['UEFI_FV'],'dvar':stores,'variables':report['CANDIDATE_VARIABLES'],'password_records':report['PASSWORD_RECORD']},indent=2,sort_keys=True)+'\n')
     (od/'report.txt').write_text(text_report(report))
     return report
 
 def text_report(r: dict[str,Any]) -> str:
-    lines=[f"MODEL: {r['MODEL']}",f"BIOS VERSION: {r['BIOS_VERSION']}",f"DUMP SIZE: {r['DUMP_SIZE']}",f"SHA256: {r['SHA256']}",f"MD5: {r['MD5']}",f"SPI REGIONS: {json.dumps(r['SPI_REGIONS'],sort_keys=True)}",f"DVAR OFFSETS: {json.dumps(r['DVAR_OFFSETS'])}",f"CANDIDATE VARIABLES: {len(r['CANDIDATE_VARIABLES'])}",f"PASSWORD RECORD: {json.dumps(r['PASSWORD_RECORD'])}",f"ENCRYPTION TYPE: {r['ENCRYPTION_TYPE']}",f"KEY ANALYSIS: {json.dumps(r['KEY_ANALYSIS'])}",f"FC1B ANALYSIS: {json.dumps(r['FC1B_ANALYSIS'])}",f"RECOVERY RESULT: {r['RECOVERY_RESULT']}",f"VERDICT: {r['VERDICT']}",f"CONFIDENCE: {r['CONFIDENCE']}",f"ERRORS: {json.dumps(r['ERRORS'])}",f"REFERENCES: {json.dumps(r['REFERENCES'])}","READ ONLY: true"]
+    lines=[f"MODEL: {r['MODEL']}",f"BIOS VERSION: {r['BIOS_VERSION']}",f"DUMP SIZE: {r['DUMP_SIZE']}",f"DUMP TYPE: {r.get('DUMP_TYPE','unknown')}",f"SHA256: {r['SHA256']}",f"MD5: {r['MD5']}",f"SPI REGIONS: {json.dumps(r['SPI_REGIONS'],sort_keys=True)}",f"DVAR OFFSETS: {json.dumps(r['DVAR_OFFSETS'])}",f"CANDIDATE VARIABLES: {len(r['CANDIDATE_VARIABLES'])}",f"PASSWORD RECORD: {json.dumps(r['PASSWORD_RECORD'])}",f"ENCRYPTION TYPE: {r['ENCRYPTION_TYPE']}",f"KEY ANALYSIS: {json.dumps(r['KEY_ANALYSIS'])}",f"FC1B ANALYSIS: {json.dumps(r['FC1B_ANALYSIS'])}",f"RECOVERY RESULT: {r['RECOVERY_RESULT']}",f"VERDICT: {r['VERDICT']}",f"CONFIDENCE: {r['CONFIDENCE']}",f"ERRORS: {json.dumps(r['ERRORS'])}",f"REFERENCES: {json.dumps(r['REFERENCES'])}","READ ONLY: true"]
     return '\n'.join(lines)+'\n'

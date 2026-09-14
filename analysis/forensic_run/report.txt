@@ -1,0 +1,19 @@
+MODEL: NOT_CONFIRMED
+BIOS VERSION: UNKNOWN
+DUMP SIZE: 16777984
+DUMP TYPE: partial_or_unknown
+SHA256: 3a36621168593608270e205a5114e0a9724e6eb102a5ff4191feef92cebce96d
+MD5: 46fa80a09e6a0efad4555bbb925b15f1
+SPI REGIONS: {"descriptor": null, "probable": false, "regions": [{"confidence": "low", "end": 16777983, "name": "whole_dump", "offset": 0, "size": 16777984}]}
+DVAR OFFSETS: []
+CANDIDATE VARIABLES: 0
+PASSWORD RECORD: []
+ENCRYPTION TYPE: UNKNOWN
+KEY ANALYSIS: []
+FC1B ANALYSIS: {"requested_suffix": "FC1B", "known_family": "Dell suffix/recovery identifier (classification requires firmware evidence)", "ascii_occurrences": [], "utf16_occurrences": [], "classification": "NOT_OBSERVED", "is_key": false, "decryptability": "NOT_APPLICABLE", "validated_records": 0, "evidence": [], "errors": []}
+RECOVERY RESULT: PASSWORD_RECORD_NOT_FOUND
+VERDICT: UNKNOWN
+CONFIDENCE: LOW
+ERRORS: []
+REFERENCES: [{"source": "CVE-2026-40639 / DSA-2026-197", "version": "public advisory, consulted 2026-09", "commit": null, "file": "N/A", "function": "N/A", "relevance": "DVAR XOR construction; validate against bytes, do not assume"}, {"source": "https://github.com/R3n5k1/dellpwn", "version": "repository reference; commit is intentionally not fetched at runtime", "commit": null, "file": "repository implementation", "function": "Dell password record handling", "relevance": "independent public cross-check; not a runtime dependency"}, {"source": "UEFI PI specification", "version": "2.10", "commit": null, "file": "UEFI variable and FV definitions", "function": "variable store / FV header parsing", "relevance": "structural parsing"}]
+READ ONLY: true

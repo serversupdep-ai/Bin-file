@@ -1,0 +1,54 @@
+{
+  "dvar": [],
+  "fvs": [],
+  "hashes": {
+    "md5": "46fa80a09e6a0efad4555bbb925b15f1",
+    "sha256": "3a36621168593608270e205a5114e0a9724e6eb102a5ff4191feef92cebce96d"
+  },
+  "identification": {
+    "bios_version": null,
+    "fc1b_occurrences": 0,
+    "fc1b_string_context": [],
+    "model": null,
+    "strings": {
+      "bios": [
+        "AllowBiosDowngrade",
+        "BIOSConnect",
+        "BiosConfigu6",
+        "BiosConfigu<|rations",
+        "BiosLogClear",
+        "BiosRcvrFrmHdd",
+        "IfwiBuildVersion",
+        "IfwiRoot/BiosRegion"
+      ],
+      "dell": [
+        "DELL 53XP73B09 CellDELL 53XP73B",
+        "DELLT",
+        "Dell Inc.",
+        "Dell:ON",
+        "Dell:ONBOARD NIC (IPV4):0002",
+        "Dell:ONw",
+        "Dell:PEBOOT:0005",
+        "Dell:UEFI HTTPs Boot (MAC:2800AF9B35F8)",
+        "Dell:UEFI RST PM9A1 NVMe Samsung 1024GB",
+        "Dell:Windows Boot Manager:0005"
+      ],
+      "fc1b": []
+    }
+  },
+  "layout": {
+    "descriptor": null,
+    "probable": false,
+    "regions": [
+      {
+        "confidence": "low",
+        "end": 16777983,
+        "name": "whole_dump",
+        "offset": 0,
+        "size": 16777984
+      }
+    ]
+  },
+  "password_records": [],
+  "variables": []
+}

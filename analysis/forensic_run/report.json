@@ -1,0 +1,168 @@
+{
+  "BIOS_VERSION": "UNKNOWN",
+  "CANDIDATE_VARIABLES": [],
+  "CONFIDENCE": "LOW",
+  "DUMP_SIZE": 16777984,
+  "DUMP_TYPE": "partial_or_unknown",
+  "DVAR_OFFSETS": [],
+  "ENCRYPTION_TYPE": "UNKNOWN",
+  "ENTROPY_BY_REGION": [
+    {
+      "entropy": 7.218869,
+      "offset": 0,
+      "sha256": "56109a74efb4d7b4f44c382b5a098d6551cc75f1cee3983f4257bc5e7a68edc4",
+      "size": 1048624
+    },
+    {
+      "entropy": 7.23468,
+      "offset": 1048624,
+      "sha256": "14ee451e65e14917a5dd44a23805ef7565125668bf2a0dfb4efaa48420a48686",
+      "size": 1048624
+    },
+    {
+      "entropy": 2.940822,
+      "offset": 2097248,
+      "sha256": "1d6275d3fef8f2fa8638eb285badae6e2a146172d17bb2eb8a81aa410d0881d7",
+      "size": 1048624
+    },
+    {
+      "entropy": 1.793133,
+      "offset": 3145872,
+      "sha256": "0d3dec8f6c347a62af7f7b8bb2caaa5cfc738974a78938844e6f6a2cba21d8ac",
+      "size": 1048624
+    },
+    {
+      "entropy": 7.293971,
+      "offset": 4194496,
+      "sha256": "ce0ddd7f32e3c8f52762f3f311a3af258033785118230281701d0f2ab6dfc586",
+      "size": 1048624
+    },
+    {
+      "entropy": 7.17604,
+      "offset": 5243120,
+      "sha256": "03ed63956150b469ccf67880c7169d3028849d44c8a46d3ee58e8850567eae13",
+      "size": 1048624
+    },
+    {
+      "entropy": 7.786417,
+      "offset": 6291744,
+      "sha256": "c3be3ca50cecfa74b062cec556af1b5aaeeaf8c51f3092ff0390c2fa1a65e0b4",
+      "size": 1048624
+    },
+    {
+      "entropy": 7.977099,
+      "offset": 7340368,
+      "sha256": "b1ccff2b3fc665b42c5d8d52ee6f0b966bc6af53e9341a6904f02bd62c58c2c8",
+      "size": 1048624
+    },
+    {
+      "entropy": 7.983837,
+      "offset": 8388992,
+      "sha256": "42d9ab9fd49303ac7e786d4e94529734b35622450a38fb62672563f27447630f",
+      "size": 1048624
+    },
+    {
+      "entropy": 3.82755,
+      "offset": 9437616,
+      "sha256": "e76becf9cc378cf3ea95886d3e7571693671e15892a79a94a0df5f9dcaf2c29f",
+      "size": 1048624
+    },
+    {
+      "entropy": 3.663194,
+      "offset": 10486240,
+      "sha256": "0b7dfa2351cc5b6740f6646940c53e692e7630dfe8a0dc93f83092da15142b95",
+      "size": 1048624
+    },
+    {
+      "entropy": -0.0,
+      "offset": 11534864,
+      "sha256": "728a632c11966c260fd1ac616aac92982c15b8c5e6e74eed85f2a4454d1cf05a",
+      "size": 1048624
+    },
+    {
+      "entropy": -0.0,
+      "offset": 12583488,
+      "sha256": "728a632c11966c260fd1ac616aac92982c15b8c5e6e74eed85f2a4454d1cf05a",
+      "size": 1048624
+    },
+    {
+      "entropy": -0.0,
+      "offset": 13632112,
+      "sha256": "728a632c11966c260fd1ac616aac92982c15b8c5e6e74eed85f2a4454d1cf05a",
+      "size": 1048624
+    },
+    {
+      "entropy": -0.0,
+      "offset": 14680736,
+      "sha256": "728a632c11966c260fd1ac616aac92982c15b8c5e6e74eed85f2a4454d1cf05a",
+      "size": 1048624
+    },
+    {
+      "entropy": -0.0,
+      "offset": 15729360,
+      "sha256": "728a632c11966c260fd1ac616aac92982c15b8c5e6e74eed85f2a4454d1cf05a",
+      "size": 1048624
+    }
+  ],
+  "ERRORS": [],
+  "FC1B_ANALYSIS": {
+    "ascii_occurrences": [],
+    "classification": "NOT_OBSERVED",
+    "decryptability": "NOT_APPLICABLE",
+    "errors": [],
+    "evidence": [],
+    "is_key": false,
+    "known_family": "Dell suffix/recovery identifier (classification requires firmware evidence)",
+    "requested_suffix": "FC1B",
+    "utf16_occurrences": [],
+    "validated_records": 0
+  },
+  "KEY_ANALYSIS": [],
+  "MD5": "46fa80a09e6a0efad4555bbb925b15f1",
+  "MODEL": "NOT_CONFIRMED",
+  "PASSWORD_RECORD": [],
+  "READ_ONLY": true,
+  "RECOVERY_RESULT": "PASSWORD_RECORD_NOT_FOUND",
+  "REFERENCES": [
+    {
+      "commit": null,
+      "file": "N/A",
+      "function": "N/A",
+      "relevance": "DVAR XOR construction; validate against bytes, do not assume",
+      "source": "CVE-2026-40639 / DSA-2026-197",
+      "version": "public advisory, consulted 2026-09"
+    },
+    {
+      "commit": null,
+      "file": "repository implementation",
+      "function": "Dell password record handling",
+      "relevance": "independent public cross-check; not a runtime dependency",
+      "source": "https://github.com/R3n5k1/dellpwn",
+      "version": "repository reference; commit is intentionally not fetched at runtime"
+    },
+    {
+      "commit": null,
+      "file": "UEFI variable and FV definitions",
+      "function": "variable store / FV header parsing",
+      "relevance": "structural parsing",
+      "source": "UEFI PI specification",
+      "version": "2.10"
+    }
+  ],
+  "SHA256": "3a36621168593608270e205a5114e0a9724e6eb102a5ff4191feef92cebce96d",
+  "SPI_REGIONS": {
+    "descriptor": null,
+    "probable": false,
+    "regions": [
+      {
+        "confidence": "low",
+        "end": 16777983,
+        "name": "whole_dump",
+        "offset": 0,
+        "size": 16777984
+      }
+    ]
+  },
+  "UEFI_FV": [],
+  "VERDICT": "UNKNOWN"
+}
