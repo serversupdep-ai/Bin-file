@@ -11,6 +11,7 @@ from collections import Counter
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Iterable
+from dell_suffix_task import inspect_suffix
 
 FIELD, KEYLEN = 32, 20
 PRINTABLE = set(range(0x20, 0x7f))
@@ -148,7 +149,7 @@ def identify(data: bytes) -> dict[str,Any]:
         if m: ver=m.group(1); break
     return {'model':model,'bios_version':ver,'strings':s,'fc1b_occurrences':len(list(re.finditer(b'FC1B',data,re.I))),'fc1b_string_context':s['fc1b']}
 
-def analyze(path: str|Path, outdir: str|Path, verbose=False) -> dict[str,Any]:
+def analyze(path: str|Path, outdir: str|Path, verbose=False, suffix='FC1B') -> dict[str,Any]:
     p=Path(path); data=p.read_bytes(); od=Path(outdir); od.mkdir(parents=True,exist_ok=True)
     layout=spi_layout(data); stores=discover_dvar(data); vars=scan_variable_records(data); found=dvar_records(data,stores); sivb=[]
     for m in re.finditer(b'SIVB',data):
@@ -161,7 +162,7 @@ def analyze(path: str|Path, outdir: str|Path, verbose=False) -> dict[str,Any]:
     elif stores: verdict='PARTIAL_MATCH'; recovery='RECOVERY_FAILED'
     elif sivb: verdict='NO_MATCH'; recovery='UNSUPPORTED_FIRMWARE'
     else: verdict='UNKNOWN'; recovery='PASSWORD_RECORD_NOT_FOUND'
-    report={'MODEL':ident['model'] or 'NOT_CONFIRMED','BIOS_VERSION':ident['bios_version'] or 'UNKNOWN','DUMP_SIZE':len(data),'SHA256':sha(data),'MD5':md5(data),'SPI_REGIONS':layout,'ENTROPY_BY_REGION':region_entropy(data),'UEFI_FV':fvs(data),'DVAR_OFFSETS':stores,'CANDIDATE_VARIABLES':[asdict(v) for v in vars],'PASSWORD_RECORD':[asdict(x) for x in found],'ENCRYPTION_TYPE':'DVAR weak XOR' if found or stores else ('SIVB / encrypted vault' if sivb else 'UNKNOWN'),'KEY_ANALYSIS':[asdict(x) for x in found],'FC1B_ANALYSIS':{'occurrences':ident['fc1b_occurrences'],'classification':'firmware/recovery identifier only; not used as a key' if ident['fc1b_occurrences'] else 'NOT_OBSERVED','correlated_with_dvar':False,'evidence':ident['fc1b_string_context']},'RECOVERY_RESULT':recovery,'VERDICT':verdict,'CONFIDENCE':'CONFIRMED' if found else ('HIGH' if sivb or stores else 'LOW'),'ERRORS':[],'REFERENCES':[{'source':'CVE-2026-40639 / DSA-2026-197','version':'public advisory, consulted 2026-09','commit':None,'file':'N/A','function':'N/A','relevance':'DVAR XOR construction; validate against bytes, do not assume'}, {'source':'https://github.com/R3n5k1/dellpwn','version':'repository reference; commit is intentionally not fetched at runtime','commit':None,'file':'repository implementation','function':'Dell password record handling','relevance':'independent public cross-check; not a runtime dependency'}, {'source':'UEFI PI specification','version':'2.10','commit':None,'file':'UEFI variable and FV definitions','function':'variable store / FV header parsing','relevance':'structural parsing'}],'READ_ONLY':True}
+    report={'MODEL':ident['model'] or 'NOT_CONFIRMED','BIOS_VERSION':ident['bios_version'] or 'UNKNOWN','DUMP_SIZE':len(data),'SHA256':sha(data),'MD5':md5(data),'SPI_REGIONS':layout,'ENTROPY_BY_REGION':region_entropy(data),'UEFI_FV':fvs(data),'DVAR_OFFSETS':stores,'CANDIDATE_VARIABLES':[asdict(v) for v in vars],'PASSWORD_RECORD':[asdict(x) for x in found],'ENCRYPTION_TYPE':'DVAR weak XOR' if found or stores else ('SIVB / encrypted vault' if sivb else 'UNKNOWN'),'KEY_ANALYSIS':[asdict(x) for x in found],'FC1B_ANALYSIS':inspect_suffix(data,suffix,[asdict(x) for x in found]),'RECOVERY_RESULT':recovery,'VERDICT':verdict,'CONFIDENCE':'CONFIRMED' if found else ('HIGH' if sivb or stores else 'LOW'),'ERRORS':[],'REFERENCES':[{'source':'CVE-2026-40639 / DSA-2026-197','version':'public advisory, consulted 2026-09','commit':None,'file':'N/A','function':'N/A','relevance':'DVAR XOR construction; validate against bytes, do not assume'}, {'source':'https://github.com/R3n5k1/dellpwn','version':'repository reference; commit is intentionally not fetched at runtime','commit':None,'file':'repository implementation','function':'Dell password record handling','relevance':'independent public cross-check; not a runtime dependency'}, {'source':'UEFI PI specification','version':'2.10','commit':None,'file':'UEFI variable and FV definitions','function':'variable store / FV header parsing','relevance':'structural parsing'}],'READ_ONLY':True}
     (od/'report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
     (od/'evidence.json').write_text(json.dumps({'hashes':{'sha256':sha(data),'md5':md5(data)},'identification':ident,'layout':layout,'fvs':report['UEFI_FV'],'dvar':stores,'variables':report['CANDIDATE_VARIABLES'],'password_records':report['PASSWORD_RECORD']},indent=2,sort_keys=True)+'\n')
     (od/'report.txt').write_text(text_report(report))

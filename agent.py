@@ -14,13 +14,14 @@ def main(argv=None) -> int:
     ap.add_argument('--report', help='also copy JSON report to this path')
     ap.add_argument('--output', default='analysis', help='evidence/report directory')
     ap.add_argument('--no-modify', action='store_true', help='explicit read-only mode (default)')
+    ap.add_argument('--suffix', default='FC1B', help='Dell suffix to investigate (default: FC1B)')
     a=ap.parse_args(argv)
     src=a.dump_opt or a.firmware
     if not src: ap.error('firmware.bin or --dump is required')
     logging.basicConfig(level=logging.DEBUG if a.verbose else logging.INFO,format='%(levelname)s %(message)s')
     p=Path(src)
     if not p.is_file(): logging.error('input does not exist: %s',p); return 2
-    try: r=analyze(p,a.output,a.verbose)
+    try: r=analyze(p,a.output,a.verbose,a.suffix)
     except (OSError,ValueError) as e: logging.error('analysis failed: %s',e); return 2
     if a.report: Path(a.report).write_text(json.dumps(r,indent=2,sort_keys=True)+'\n')
     if a.json: print(json.dumps(r,indent=2,sort_keys=True))
