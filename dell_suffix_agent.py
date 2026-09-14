@@ -17,10 +17,10 @@ def occurrences(data: bytes, suffix: str):
 
 def main(argv=None):
     ap=argparse.ArgumentParser(description='Analyze a Dell BIOS suffix from an authorized dump.')
-    ap.add_argument('firmware'); ap.add_argument('--suffix',default='CF1B',help='suffix, e.g. CF1B or 8FC8')
+    ap.add_argument('firmware'); ap.add_argument('--suffix',default=None,help='suffix, e.g. CF1B or 8FC8; if omitted, prompt interactively')
     ap.add_argument('--output',default='analysis/suffix_task'); ap.add_argument('--json',action='store_true')
     ap.add_argument('--no-modify',action='store_true',help='read-only; accepted for explicitness')
-    a=ap.parse_args(argv); suffix=a.suffix.upper().replace('-','')
+    a=ap.parse_args(argv); supplied=a.suffix or input('Enter Dell suffix (for example FC1B or CF1B): ').strip(); suffix=supplied.upper().replace('-','')
     if len(suffix)!=4 or any(c not in '0123456789ABCDEF' for c in suffix): ap.error('--suffix must be four hexadecimal characters')
     p=Path(a.firmware)
     if not p.is_file(): ap.error(f'input not found: {p}')

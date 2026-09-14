@@ -48,10 +48,11 @@ def download_public(url: str, directory: Path, limit: int = 128*1024*1024) -> di
 
 def main(argv=None):
     ap=argparse.ArgumentParser(description="Collect public Dell suffix research and compare it with a local dump.")
-    ap.add_argument("firmware"); ap.add_argument("--suffix",default="FC1B"); ap.add_argument("--output",default="analysis/public_suffix_research"); ap.add_argument("--source-url",action='append',default=[],help='explicit HTTPS URL to save for offline analysis (repeatable)'); ap.add_argument("--json",action="store_true"); ap.add_argument("--no-modify",action="store_true")
+    ap.add_argument("firmware"); ap.add_argument("--suffix",default=None,help='Dell suffix; if omitted, the agent asks interactively'); ap.add_argument("--output",default="analysis/public_suffix_research"); ap.add_argument("--source-url",action='append',default=[],help='explicit HTTPS URL to save for offline analysis (repeatable)'); ap.add_argument("--json",action="store_true"); ap.add_argument("--no-modify",action="store_true")
     a=ap.parse_args(argv); p=Path(a.firmware)
     if not p.is_file(): ap.error(f"input not found: {p}")
-    suffix=a.suffix.upper().replace("-","")
+    supplied=a.suffix or input('Enter Dell suffix (for example FC1B or CF1B): ').strip()
+    suffix=supplied.upper().replace("-","")
     if not re.fullmatch(r"[0-9A-F]{4}",suffix): ap.error("--suffix must be four hexadecimal characters")
     out=Path(a.output); out.mkdir(parents=True,exist_ok=True); (out/'sources').mkdir(exist_ok=True)
     local=analyze(p,out)
